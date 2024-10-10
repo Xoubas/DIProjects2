@@ -6,6 +6,7 @@ package reservasalon;
 
 import java.awt.BorderLayout;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -15,7 +16,7 @@ import javax.swing.JTextField;
  *
  * @author stx
  */
-public class ReservaSalon extends JFrame {
+public class ReservaSalon extends JDialog {
 
     DatosPersona datosPersona;
     DatosEvento datosEvento;
@@ -23,23 +24,20 @@ public class ReservaSalon extends JFrame {
 
     public ReservaSalon() {
         setLayout(new BorderLayout());
+        setTitle("Reserva salon principal");
 
         datosPersona = new DatosPersona();
-        JPanel panel = new JPanel();
-        panel.add(datosPersona);
+        add(datosPersona, BorderLayout.NORTH);
 
-        add(panel, BorderLayout.LINE_START);
-        add(new JLabel("Cositas"), BorderLayout.CENTER);
+        datosEvento = new DatosEvento();
+        add(datosEvento, BorderLayout.CENTER);
 
+        add(new JButton("Reservar"), BorderLayout.SOUTH);
+ 
         setTitle("Reserva salon");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        setSize(500, 350);
+        setSize(300, 500);
         setVisible(true);
     }
-
-    public static void main(String[] args) {
-        new ReservaSalon();
-    }
-
 }

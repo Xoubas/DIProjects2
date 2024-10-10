@@ -1,15 +1,22 @@
+
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package reservasalon;
 
 /**
  *
  * @author stx
  */
-public class Classmain {
-    public static void main(String[] args) {
-        new ReservaSalon();
+public class RoomSelection extends JPanel{
+    JLabel label;
+    JButton button;
+    
+    public RoomSelection(){
+        
     }
 }
