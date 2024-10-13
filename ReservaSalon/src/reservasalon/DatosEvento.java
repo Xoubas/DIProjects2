@@ -6,32 +6,29 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Calendar;
 import java.util.Date;
-import javax.swing.border.CompoundBorder;
 
 public class DatosEvento extends JPanel {
 
     private JSpinner spinnerFecha, spinnerAsistentes, spinnerDias, spinnerHabitaciones;
     private JComboBox<String> comboTipo;
     private JList<String> listComida;
-    private JTextField textHabitaciones;
 
     public DatosEvento() {
-        // Establecer el layout y el borde
+        // Set layout and border
         setLayout(new GridLayout(6, 2, 5, 5));
 
-        // Componente para seleccionar la fecha
+        // Date selection component
         add(new JLabel("Fecha:"));
         Date today = new Date();
         // Create a spinner model with today's date as the minimum value, no max value, and increment by days
         SpinnerDateModel dateModel = new SpinnerDateModel(today, today, null, Calendar.DAY_OF_MONTH);
-        spinnerFecha = new JSpinner(new SpinnerDateModel());
+        spinnerFecha = new JSpinner(dateModel);
         JSpinner.DateEditor timeEditor = new JSpinner.DateEditor(spinnerFecha, "dd/MM/yy HH:mm");
         spinnerFecha.setEditor(timeEditor);
-        spinnerFecha.setValue(new Date()); // Fecha actual
         spinnerFecha.setToolTipText("Fecha del evento");
         add(spinnerFecha);
 
-        // Componente para seleccionar el tipo de evento
+        // Event type selection component
         add(new JLabel("Tipo:"));
         String[] tiposEvento = {"Boda/Comunion/Bautizo", "Cumpleaños", "Reunion empresa"};
         comboTipo = new JComboBox<>(tiposEvento);
@@ -39,14 +36,14 @@ public class DatosEvento extends JPanel {
         comboTipo.setToolTipText("Tipo de evento");
         add(comboTipo);
 
-        // Campo para número de asistentes
+        // Number of attendees field
         add(new JLabel("N° Asistentes:"));
         SpinnerNumberModel assistantModel = new SpinnerNumberModel(1, 1, 100, 1);
         spinnerAsistentes = new JSpinner(assistantModel);
         spinnerAsistentes.setToolTipText("Numero de asistentes");
         add(spinnerAsistentes);
 
-        // Componente para seleccionar la comida
+        // Food selection component
         add(new JLabel("Selección comida:"));
         DefaultListModel<String> comidaModel = new DefaultListModel<>();
         comidaModel.addElement("Menu cerrado");
@@ -59,7 +56,7 @@ public class DatosEvento extends JPanel {
         pane.setToolTipText("Tipos de comida");
         add(pane);
 
-        // Campo para número de días
+        // Number of days field
         add(new JLabel("N° días:"));
         SpinnerNumberModel modelDias = new SpinnerNumberModel(1, 1, 100, 1);
         spinnerDias = new JSpinner(modelDias);
@@ -67,9 +64,9 @@ public class DatosEvento extends JPanel {
         spinnerDias.setToolTipText("Duracion del evento");
         add(spinnerDias);
 
-        // Campo para habitaciones
+        // Rooms field
         add(new JLabel("Habitaciones:"));
-        spinnerHabitaciones = new JSpinner(new SpinnerNumberModel(0, 1, 100, 1));
+        spinnerHabitaciones = new JSpinner(new SpinnerNumberModel(0, 0, 100, 1)); // Changed minimum to 0
         spinnerHabitaciones.setEnabled(false);
         spinnerHabitaciones.setToolTipText("Habitaciones");
         add(spinnerHabitaciones);
@@ -84,9 +81,9 @@ public class DatosEvento extends JPanel {
     }
 
     private void actualizarCampos() {
-        String tipoEvento = comboTipo.getSelectedItem().toString();
+        String tipoEvento = (String) comboTipo.getSelectedItem();
 
-        // Desactivar/Activar campos según el tipo de evento seleccionado
+        // Activate/Deactivate fields based on the selected event type
         if (tipoEvento.equals("Cumpleaños")) {
             spinnerDias.setEnabled(false);
             spinnerHabitaciones.setEnabled(false);
@@ -97,7 +94,7 @@ public class DatosEvento extends JPanel {
             spinnerDias.setEnabled(true);
             spinnerHabitaciones.setEnabled(false);
         } else {
-            // En caso de eventos genéricos, ambos campos activados
+            // For generic events, both fields activated
             spinnerDias.setEnabled(true);
             spinnerHabitaciones.setEnabled(true);
         }

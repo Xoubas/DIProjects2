@@ -1,20 +1,8 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package reservasalon;
 
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import javax.swing.BorderFactory;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.*;
+import java.awt.*;
 
-/**
- *
- * @author stx
- */
 public class DatosPersona extends JPanel {
 
     private JLabel labNombre, labTelefono, labEmail;
@@ -24,19 +12,19 @@ public class DatosPersona extends JPanel {
         setLayout(new GridLayout(3, 2, 5, 5));
         setBorder(BorderFactory.createTitledBorder("Datos personales reserva"));
 
-        labNombre = new JLabel("Nombre");
+        labNombre = new JLabel("Nombre:");
         add(labNombre);
-        texNombre = new JTextField(3);
+        texNombre = new JTextField(20); // Increased to a reasonable size
         add(texNombre);
 
-        labTelefono = new JLabel("Teléfono");
+        labTelefono = new JLabel("Teléfono:");
         add(labTelefono);
-        texTelefono = new JTextField(3);
+        texTelefono = new JTextField(20); // Increased to a reasonable size
         add(texTelefono);
 
-        labEmail = new JLabel("Email");
+        labEmail = new JLabel("Email:");
         add(labEmail);
-        texEmail = new JTextField(3);
+        texEmail = new JTextField(20); // Increased to a reasonable size
         add(texEmail);
     }
 }

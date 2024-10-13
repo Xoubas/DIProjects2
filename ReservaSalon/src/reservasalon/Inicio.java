@@ -4,12 +4,15 @@
  */
 package reservasalon;
 
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
 /**
  *
  * @author stx
  */
-public class Classmain {
-    public static void main(String[] args) {
-        new GestionEventos();
+public class Inicio extends JPanel{
+    public Inicio(){
+        add(new JLabel("Scubidu papapa."));
     }
 }
