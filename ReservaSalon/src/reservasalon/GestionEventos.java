@@ -97,8 +97,4 @@ public class GestionEventos extends JFrame {
             }
         });
     }
-
-    public static void main(String[] args) {
-        new GestionEventos();
-    }
 }

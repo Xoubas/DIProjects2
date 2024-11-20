@@ -13,6 +13,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import java.sql.PreparedStatement;
+import javax.swing.table.TableModel;
 
 /**
  *
@@ -44,8 +46,6 @@ public class Form extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jScrollPane3 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         lista = new javax.swing.JTable();
@@ -59,19 +59,6 @@ public class Form extends javax.swing.JFrame {
         butBorrar = new javax.swing.JButton();
         butRefrescar = new javax.swing.JButton();
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
-            }
-        ));
-        jScrollPane3.setViewportView(jTable1);
-
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Ex2-UD1");
         setPreferredSize(new java.awt.Dimension(646, 480));
@@ -84,6 +71,11 @@ public class Form extends javax.swing.JFrame {
                 "ID", "Nombre", "Ciudad"
             }
         ));
+        lista.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                listaMouseClicked(evt);
+            }
+        });
         jScrollPane2.setViewportView(lista);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
@@ -116,10 +108,25 @@ public class Form extends javax.swing.JFrame {
         labCiudad.setText("Ciudad:");
 
         butAñadir.setText("Añadir");
+        butAñadir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                butAñadirActionPerformed(evt);
+            }
+        });
 
         butBorrar.setText("Borrar");
+        butBorrar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                butBorrarActionPerformed(evt);
+            }
+        });
 
         butRefrescar.setText("Refrescar");
+        butRefrescar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                butRefrescarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -186,6 +193,29 @@ public class Form extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_textNombreActionPerformed
 
+    private void butAñadirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butAñadirActionPerformed
+        insertar(textNombre.getText(), textCiudad.getText());
+    }//GEN-LAST:event_butAñadirActionPerformed
+
+    private void butBorrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butBorrarActionPerformed
+        borrar();
+    }//GEN-LAST:event_butBorrarActionPerformed
+
+    private void listaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listaMouseClicked
+        int row = lista.getSelectedRow();
+        TableModel modelo = (DefaultTableModel) lista.getModel();
+        Object[] contacto = new Object[3];
+        textId.setText(modelo.getValueAt(row, 0).toString());
+        textNombre.setText(modelo.getValueAt(row, 1).toString());
+        textCiudad.setText(modelo.getValueAt(row, 2).toString());
+    }//GEN-LAST:event_listaMouseClicked
+
+    private void butRefrescarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butRefrescarActionPerformed
+        limpiarTabla();
+        limpiarTexto();
+        consultar();
+    }//GEN-LAST:event_butRefrescarActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -241,20 +271,90 @@ public class Form extends javax.swing.JFrame {
             Logger.getLogger(Form.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
-    private void insertar(String nombre, String ciudad){
-        if(nombre.equals("")||ciudad.equals("")){
-            JOptionPane.showMessageDialog(null, "Debe introducir un valor valido", "Aviso", 2);
+
+    private void insertar(String nombre, String ciudad) {
+        if (nombre.isEmpty() || ciudad.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Debe introducir un valor valido", "Aviso", JOptionPane.WARNING_MESSAGE);
             limpiarTexto();
-        }else{
-            
+        } else {
+            try {
+                // Con PreparedStatement para prevenir inyección SQL
+                String sql = "insert into contactos (ID, Nombre, Ciudad) values(?, ?, ?)";
+                conet = con1.getConexion();
+                PreparedStatement pst = conet.prepareStatement(sql);
+
+                pst.setInt(1, obtenerUltimoID() + 1);
+                pst.setString(2, nombre);
+                pst.setString(3, ciudad);
+                pst.executeUpdate();
+
+                // Añadir directamente al modelo sin necesidad de recargar todo
+                Object[] nuevoContacto = {obtenerUltimoID(), nombre, ciudad}; // 'obtenerUltimoID' si necesitas manualmente
+                model.addRow(nuevoContacto);
+                limpiarTexto();
+                JOptionPane.showMessageDialog(null, "Un nuevo contacto ha sido añadido", "Añadir", 2);
+            } catch (SQLException ex) {
+                Logger.getLogger(Form.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
-    
-    private void limpiarTexto(){
+
+    private void borrar() {
+        int row = lista.getSelectedRow(); // Obtener la fila seleccionada
+
+        if (row != -1) { // Verificar que se ha seleccionado una fila
+            try {
+                // Supongamos que la columna 0 de la tabla contiene el ID del contacto
+                int idContacto = (int) model.getValueAt(row, 0); // Obtener el ID del contacto desde la tabla
+
+                conet = con1.getConexion();
+                PreparedStatement prep = conet.prepareStatement("DELETE FROM contactos WHERE ID=?");
+                prep.setInt(1, idContacto); // Pasar el ID del contacto a eliminar
+                int ps = prep.executeUpdate(); // Ejecutar la eliminación
+                limpiarTabla();
+                if (ps > 0) {
+                    consultar(); // Refrescar la tabla después de eliminar el contacto
+                    JOptionPane.showMessageDialog(rootPane, "Se ha borrado el contacto", "ÉXITO", 1);
+                }
+
+            } catch (SQLException ex) {
+                Logger.getLogger(Form.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+        } else {
+            JOptionPane.showMessageDialog(null, "Selecciona una fila", "ERROR", 2);
+        }
+    }
+
+    private void limpiarTabla() {
+        for (int i = 0; i < lista.getRowCount(); i++) {
+            model.removeRow(i);
+            if (lista.getRowCount() > 0) {
+                i = i - 1;
+            }
+        }
+    }
+
+    private void limpiarTexto() {
         textCiudad.setText("");
         textNombre.setText("");
         textId.setText("");
+    }
+
+    private int obtenerUltimoID() {
+        int ultimoId = 0;
+        String query = "SELECT MAX(ID) AS maxID from contactos";
+        try {
+            conet = con1.getConexion();
+            st = conet.createStatement();
+            rs = st.executeQuery(query);
+            if (rs.next()) {
+                ultimoId = rs.getInt("maxID");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Form.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return ultimoId;
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -263,8 +363,6 @@ public class Form extends javax.swing.JFrame {
     private javax.swing.JButton butRefrescar;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JTable jTable1;
     private javax.swing.JLabel labCiudad;
     private javax.swing.JLabel labId;
     private javax.swing.JLabel labNombre;

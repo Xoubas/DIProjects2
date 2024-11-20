@@ -35,9 +35,8 @@ public class ReservaSalon extends JDialog {
         add(new JButton("Reservar"), BorderLayout.SOUTH);
  
         setTitle("Reserva salon");
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setSize(300, 500);
-        setVisible(true);
+        setVisible(false);
     }
 }
